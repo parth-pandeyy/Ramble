@@ -1,0 +1,48 @@
+doctype html
+html
+    head
+        block head
+            meta(charset='UTF-8')
+            meta(name='viewport' content='width=device-width, initial-scale=1.0')
+            link(rel='stylesheet' href='/css/style.css')
+            link(rel='shortcut icon' type='image/png' href='/img/favicon.png')
+            link(rel = 'stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
+
+    body
+        header.header
+            nav.nav.nav--tours
+                .header__logo
+                    a.nav__el(href='/')
+                        img(src='/img/logo-grey.png' alt='Ramble logo')
+            nav.nav.nav--user
+                if user
+                    a.nav__el.nav__el--logout Logout
+                    a.nav__el(hred='#')
+                        img.nav__user-img(src=`/img/users/${user.photo}` alt=`Photo of ${user.name}`)
+                        span= user.name.split(' ')[0]
+                else
+                    buttopn.nav__el(href='/') All tours
+                    a.nav__el(href='/login') Log in
+                    a.nav__el.nav_el--cta(href='/signup') Sign up
+
+        main.login-page
+            body.login-page
+                .login-form
+                    h2.heading-secondary.ma-bt-lg Log into your account
+                    form.form.form--login
+                        .form__group
+                            label.form__label(for='email') Email address
+                            input#email.form__input(type='email', placeholder='you@example.com', required)
+                        .form__group.ma-bt-md
+                            label.form__label(for='password') Password
+                            input#password.form__input(type='password', placeholder='••••••••', required, minlength='8')
+                        .form__group
+                            button.btn.btn--green Login
+
+                // Add a container for the video
+                .video-container
+                    video#login-video(src='https://cdn.dribbble.com/uploads/48226/original/b8bd4e4273cceae2889d9d259b04f732.mp4', autoplay loop muted)
+
+        //script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js')
+        //script(src='/js/login.js')
+        script(src='/js/bundled/index.js')
