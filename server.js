@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const dotenv = require('dotenv');
 const app = require('./app');
 
@@ -9,9 +8,17 @@ process.on('uncaughtException', (err) => {
 });
 
 dotenv.config({ path: './config.env' });
-//onst app = require('./app');
 
-//console.log(process.env);
+// Add logs to debug environment variables
+console.log('DATABASE:', process.env.DATABASE);
+console.log('DATABASE_PASSWORD:', process.env.DATABASE_PASSWORD);
+
+if (!process.env.DATABASE || !process.env.DATABASE_PASSWORD) {
+  console.error(
+    'DATABASE or DATABASE_PASSWORD environment variable is not defined'
+  );
+  process.exit(1);
+}
 
 const DB = process.env.DATABASE.replace(
   '<password>',
@@ -19,19 +26,13 @@ const DB = process.env.DATABASE.replace(
 );
 
 mongoose
-  .connect(DB)
-  .then(() => console.log('DB connection successfull🫠'))
-  .catch((error) => {
-    console.error('DB conncetion failed:', error);
-  });
-
-mongoose
   .connect(DB, {
     useNewUrlParser: true
-    // useCreateIndex: true,
-    // useFindAndModify: false,
   })
-  .then(() => console.log('DB connection successfull🫠'));
+  .then(() => console.log('DB connection successful🫠'))
+  .catch((error) => {
+    console.error('DB connection failed:', error);
+  });
 
 const port = process.env.PORT || 3000;
 
@@ -42,20 +43,8 @@ const server = app.listen(port, () => {
 process.on('unhandledRejection', (err) => {
   console.log('UNHANDLED REJECTION! 🔴 Shutting Down...');
   console.log(err.name, err.message);
-});
-
-// process.on('unhandledRejecton', (err) => {
-//   console.log(err.name, err.message);
-//   console.log('UNHANDLED REJECTION! 🔴 Shutting Down...');
-//   server.close(() => {
-//     process.exit(1);
-//   });
-// });
-
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
   server.close(() => {
-    console.log('HTTP server closed');
+    process.exit(1);
   });
 });
 
