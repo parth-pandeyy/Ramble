@@ -13,6 +13,11 @@ dotenv.config({ path: './config.env' });
 
 //console.log(process.env);
 
+if (!process.env.DATABASE) {
+  console.error('DATABASE environment variable is not defined!');
+  process.exit(1); // Exit the process with an error
+}
+
 const DB = process.env.DATABASE.replace(
   '<password>',
   process.env.DATABASE_PASSWORD
