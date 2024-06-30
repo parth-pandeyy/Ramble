@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const dotenv = require('dotenv');
+const app = require('./app');
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! 🔴 Shutting Down...');
@@ -17,12 +18,12 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-// mongoose
-//   .connect(DB)
-//   .then(() => console.log('DB connection successfull🫠'))
-//   .catch((error) => {
-//     console.error('DB conncetion failed:', error);
-//   });
+mongoose
+  .connect(DB)
+  .then(() => console.log('DB connection successfull🫠'))
+  .catch((error) => {
+    console.error('DB conncetion failed:', error);
+  });
 
 mongoose
   .connect(DB, {
@@ -50,5 +51,12 @@ process.on('unhandledRejection', (err) => {
 //     process.exit(1);
 //   });
 // });
+
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+  });
+});
 
 module.exports = app;
