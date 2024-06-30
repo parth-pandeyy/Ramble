@@ -2,17 +2,15 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const app = require('./app');
 
-process.on('uncaughtException', (err) => {
-  console.log('UNCAUGHT EXCEPTION! 🔴 Shutting Down...');
-  console.log(err.name, err.message);
-});
-
 dotenv.config({ path: './config.env' });
 
-// Add logs to debug environment variables
+// Log all environment variables for debugging purposes
+console.log('All Environment Variables:', process.env);
+
 console.log('DATABASE:', process.env.DATABASE);
 console.log('DATABASE_PASSWORD:', process.env.DATABASE_PASSWORD);
 
+// Check if essential variables are defined
 if (!process.env.DATABASE || !process.env.DATABASE_PASSWORD) {
   console.error(
     'DATABASE or DATABASE_PASSWORD environment variable is not defined'
@@ -35,9 +33,16 @@ mongoose
   });
 
 const port = process.env.PORT || 3000;
-
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
+});
+
+process.on('uncaughtException', (err) => {
+  console.log('UNCAUGHT EXCEPTION! 🔴 Shutting Down...');
+  console.log(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
 });
 
 process.on('unhandledRejection', (err) => {
