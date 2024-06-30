@@ -2,54 +2,45 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const app = require('./app');
 
+process.on('uncaughtException', (err) => {
+  console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
+  console.log(err.name, err.message);
+  process.exit(1);
+});
+
 dotenv.config({ path: './config.env' });
 
-// Log all environment variables for debugging purposes
-console.log('All Environment Variables:', process.env);
-
-console.log('DATABASE:', process.env.DATABASE);
-console.log('DATABASE_PASSWORD:', process.env.DATABASE_PASSWORD);
-
-// Check if essential variables are defined
-if (!process.env.DATABASE || !process.env.DATABASE_PASSWORD) {
-  console.error(
-    'DATABASE or DATABASE_PASSWORD environment variable is not defined'
-  );
-  process.exit(1);
-}
-
 const DB = process.env.DATABASE.replace(
-  '<password>',
+  '<PASSWORD>',
   process.env.DATABASE_PASSWORD
 );
 
 mongoose
   .connect(DB, {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true
   })
-  .then(() => console.log('DB connection successful🫠'))
-  .catch((error) => {
-    console.error('DB connection failed:', error);
-  });
+  .then(() => console.log('DB connection successful!'));
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
 
-process.on('uncaughtException', (err) => {
-  console.log('UNCAUGHT EXCEPTION! 🔴 Shutting Down...');
+process.on('unhandledRejection', (err) => {
+  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
   console.log(err.name, err.message);
   server.close(() => {
     process.exit(1);
   });
 });
 
-process.on('unhandledRejection', (err) => {
-  console.log('UNHANDLED REJECTION! 🔴 Shutting Down...');
-  console.log(err.name, err.message);
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
   server.close(() => {
-    process.exit(1);
+    console.log('HTTP server closed');
   });
 });
 
