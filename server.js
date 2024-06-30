@@ -8,7 +8,7 @@ process.on('uncaughtException', (err) => {
 });
 
 dotenv.config({ path: './config.env' });
-const app = require('./app');
+//onst app = require('./app');
 
 //console.log(process.env);
 
@@ -50,3 +50,5 @@ process.on('unhandledRejection', (err) => {
 //     process.exit(1);
 //   });
 // });
+
+module.exports = app;
